@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Meme Generator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2em;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #memeContainer {
+      margin-top: 20px;
+    }
+
+    #memeImage {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Random Meme Generator</h1>
+    <button id="generateMemeButton">Generate Meme</button>
+    <div id="memeContainer">
+      <img id="memeImage" src="" alt="Random Meme">
+    </div>
+  </div>
+  <script>
+    document.getElementById('generateMemeButton').addEventListener('click', generateMeme);
+
+    async function generateMeme() {
+      try {
+        // Fetch meme templates
+        const templateResponse = await fetch('https://api.memegen.link/templates/');
+        const templates = await templateResponse.json();
+
+        // Fetch a random quote
+        const quoteResponse = await fetch('https://api.quotable.io/random');
+        const quoteData = await quoteResponse.json();
+
+        // Randomly select a template
+        const randomIndex = Math.floor(Math.random() * templates.length);
+        const selectedTemplate = templates[randomIndex];
+
+        // Use the quote text as the top text and the author as the bottom text
+        const topText = quoteData.content;
+        const bottomText = `- ${quoteData.author}`;
+
+        // Construct the meme URL
+        const memeUrl = `https://api.memegen.link/images/${selectedTemplate.id}/${encodeURIComponent(topText)}/${encodeURIComponent(bottomText)}.png`;
+
+        // Display the meme
+        document.getElementById('memeImage').src = memeUrl;
+      } catch (error) {
+        console.error('Error generating meme:', error);
+      }
+    }
+  </script>
+</body>
+</html>
